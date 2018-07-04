@@ -71,14 +71,15 @@ class Downloader:
             url = self.base_url.format(*url)
             if fn == '':
                 fn = os.path.basename(url)
+            img = urllib.request.urlopen(url)
+            if img.status is not 200:
+                raise Exception('Image cannot be reached({})'.format(
+                    img.status))
             with open(os.path.join(path, fn), 'wb') as f:
-                img = urllib.request.urlopen(url)
-                if img.status_code is not 200:
-                    raise Exception('Image cannot be reached({})'.format(
-                        img.status_code))
                 f.write(img.read())
-
         except Exception as e:
+            if os.path.exists(os.path.join(path, fn)):
+                os.remove(os.path.join(path.fn))
             self.logger.error(
                 "Error downloading image: " + url + ' ; err: ' + str(e))
             return False
