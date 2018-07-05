@@ -106,3 +106,7 @@ flask/
 
 # macOS
 .DS_Store
+
+# Project settings:
+config.yaml
+test_*
