@@ -55,15 +55,16 @@ class Downloader:
             fn,
         ))
 
-    def download(self, url, path='', fn=''):
+    def download(self, url, path='', fn='', referer=''):
         r = self.pool.apply_async(self.dl, (
             url,
             path,
             fn,
+            referer,
         ))
         self.dl_list.append((url, r))
 
-    def dl(self, url, path='', fn=''):
+    def dl(self, url, path='', fn='', referer=''):
         try:
             path = self.make_sure_path(os.path.join(self.base_path, path))
             if isinstance(url, str):
@@ -71,7 +72,9 @@ class Downloader:
             url = self.base_url.format(*url)
             if fn == '':
                 fn = os.path.basename(url)
-            img = urllib.request.urlopen(url)
+            req = urllib.request.Request(url)
+            req.add_header('Referer', referer)
+            img = urllib.request.urlopen(req)
             if img.status is not 200:
                 raise Exception('Image cannot be reached({})'.format(
                     img.status))
